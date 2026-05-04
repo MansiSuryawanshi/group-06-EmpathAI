@@ -41,11 +41,14 @@ data/                            # 📊 Data warehouse
 ├── llm_tagged/                  # BART zero-shot tagged data
 └── splits/                      # Train/Val/Test stratified splits
 
-models/                          # 🧠 Model training scripts
+models/                          # 🧠 Model training scripts & artifacts
 ├── baseline_minilm_lr.py        # MiniLM intent trainer
 ├── baseline_minilm_lr_concern.py # MiniLM concern trainer
 ├── distilroberta_lora.py        # DistilRoBERTa intent trainer
 ├── distilroberta_lora_concern.py # DistilRoBERTa concern trainer
+├── roberta_lora.py              # RoBERTa intent trainer
+├── roberta_lora_concern.py      # RoBERTa concern trainer
+├── empath_model/                # DeBERTa-v3 adapter artifacts
 └── helper.py                    # Shared utilities & magic
 
 scripts/                         # 🔧 Pipeline toolbox
@@ -165,6 +168,13 @@ python models/roberta_lora.py --config configs/roberta_lora.yaml
 python models/roberta_lora_concern.py --config configs/roberta_lora_concern.yaml
 ```
 **Results:** ~0.77+ F1 (longer training, full power)
+
+### DeBERTa-v3 (Adapter / LoRA)
+```bash
+# DeBERTa-v3 model artifacts are available in models/empath_model/
+# Training and fine-tuning details are stored with adapter configs and saved weights.
+```
+**Results:** ~0.726 Macro F1, ~0.770 Micro F1 (balanced performance)
 
 ---
 
