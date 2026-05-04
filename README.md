@@ -6,12 +6,21 @@ Welcome to **EmpathAI**, an intelligent detection system that reads between the 
 
 ## 🎯 What Does This Do?
 
-Imagine thousands of posts flowing through mental health forums every day. Some are just venting. Some are critical cries for help. This system intelligently **categorizes the intent** behind each post (Is it asking for help? Tracking mood? Sharing a coping strategy?) and **assesses the concern level** (Low risk check-in, medium concern, high-risk crisis).
+Imagine thousands of posts flowing through mental health forums every day. Some are just venting. Some are critical cries for help. This system is a **complete end-to-end mental health assistant pipeline** that:
 
-We've trained and benchmarked **three powerful AI models**:
+1. **Classifies intent** behind each post (9 categories: Critical Risk, Mental Distress, Seeking Help, etc.)
+2. **Assesses concern levels** (Low, Medium, High risk)
+3. **Detects crises** using keyword-based systems
+4. **Retrieves relevant support knowledge** via FAISS vector search
+5. **Generates empathetic responses** using Flan-T5 with RAG
+6. **Ensures safety** with disclaimers and helpline resources
+7. **Logs interactions** for monitoring and improvement
+
+We've trained and benchmarked **four powerful AI models**:
 - **🚀 MiniLM Lightning** - Fast, efficient, production-ready
 - **⚡ DistilRoBERTa Turbo** - Lean & mean with LoRA fine-tuning  
-- **🔥 RoBERTa Pro** - Heavy-hitter performance (requires more resources)
+- **🔥 RoBERTa Pro** - Heavy-hitter performance
+- **💎 DeBERTa-v3 Elite** - Second-best accuracy with efficiency
 
 All orchestrated through a **YAML-driven pipeline** so you never touch code unless you want to.
 
@@ -201,6 +210,95 @@ Outputs contextualized, retrieval-augmented responses for support conversations.
 
 ---
 
+## 🧠 Final Model Performance (Updated)
+
+We trained and evaluated multiple models on the BART-augmented dataset.
+
+### 📊 Intent Classification Results
+
+| Rank | Model                        | Macro-F1  | Micro-F1  |
+| ---- | ---------------------------- | --------- | --------- |
+| 🥇 1 | RoBERTa-Large + LoRA         | **0.774** | **0.820** |
+| 🥈 2 | DeBERTa-v3 + LoRA            | **0.726** | **0.770** |
+| 🥉 3 | MiniLM + Logistic Regression | 0.696     | 0.733     |
+| 4    | DistilRoBERTa + LoRA         | 0.646     | 0.642     |
+
+👉 The DeBERTa-v3 LoRA model is our **second-best model**, offering a strong balance between performance and efficiency.
+
+---
+
+### 📈 Final Test Metrics (DeBERTa-v3 LoRA)
+
+* **Macro F1:** 0.726
+* **Micro F1:** 0.770
+* **PR-AUC (Macro):** ~0.786
+* **Best Threshold:** 0.45
+
+---
+
+## 🚀 From Midterm → Final System
+
+| Component           | Midterm                  | Finals                             |
+| ------------------- | ------------------------ | ---------------------------------- |
+| Labeling            | Human + weak supervision | BART zero-shot re-labeling         |
+| Intent F1           | 0.70                     | **0.774 (+10.6%)**                 |
+| Concern F1          | 0.78                     | **0.786 (+0.8%)**                  |
+| Knowledge Base      | ❌ Not built              | ✅ 50K+ snippets (FAISS indexed)    |
+| Response Generation | ❌ Not built              | ✅ Flan-T5 (grounded RAG)           |
+| Crisis Detection    | ❌ Not built              | ✅ 3-tier keyword system            |
+| Safety Checks       | ❌ Not built              | ✅ Violation detection + fallback   |
+| Logging             | ❌ Not built              | ✅ JSONL logs (general + high-risk) |
+| Evaluation          | Basic metrics            | + Relevance, Grounding, Safety     |
+
+---
+
+## 🧩 Full Pipeline (Final System)
+
+The final system is no longer just classification.
+
+It is a **complete end-to-end mental health assistant pipeline**:
+
+1. **Post Classification**
+
+   * Intent prediction
+   * Concern level detection
+
+2. **Crisis Detection**
+
+   * Keyword-based 3-tier system
+   * Flags high-risk posts
+
+3. **Knowledge Retrieval (RAG)**
+
+   * FAISS vector search over 50K+ entries
+   * Retrieves relevant support snippets
+
+4. **Response Generation**
+
+   * Flan-T5 generates grounded responses
+   * Uses retrieved context
+
+5. **Safety Layer**
+
+   * Adds disclaimers
+   * Provides helpline resources
+
+6. **Logging System**
+
+   * General logs
+   * High-risk interaction logs
+
+---
+
+## 💡 Summary
+
+* Midterm: *"We can classify posts."*
+* Final: *"We can classify, retrieve, generate, detect crises, and ensure safe responses."*
+
+This transforms the project from a **model** into a **real-world deployable system**.
+
+---
+
 ## 🛠️ Development & Debugging
 
 ### Check data integrity:
@@ -226,13 +324,14 @@ print(df.head())
 
 ---
 
-## 📈 Model Comparison
+## 📈 Model Comparison (BART-Augmented Dataset)
 
-| Model | F1 (Intent) | F1 (Concern) | Speed | Memory | Best For |
-|-------|-------------|-------------|-------|--------|----------|
-| **MiniLM** | 0.696 | 0.708 | ⚡⚡⚡ | 🧠 | Production, Real-time |
-| **DistilRoBERTa** | 0.75+ | 0.73+ | ⚡⚡ | 🧠🧠 | Balanced, Fine-tuned |
-| **RoBERTa** | 0.77+ | 0.75+ | ⚡ | 🧠🧠🧠 | Research, Offline |
+| Rank | Model                        | Macro-F1  | Micro-F1  | Speed | Memory | Best For |
+| ---- | ---------------------------- | --------- | --------- |-------|--------|----------|
+| 🥇 1 | RoBERTa-Large + LoRA         | **0.774** | **0.820** | ⚡ | 🧠🧠🧠 | Maximum Accuracy |
+| 🥈 2 | DeBERTa-v3 + LoRA            | **0.726** | **0.770** | ⚡⚡ | 🧠🧠 | Balanced Performance |
+| 🥉 3 | MiniLM + Logistic Regression | 0.696     | 0.733     | ⚡⚡⚡ | 🧠 | Production, Real-time |
+| 4    | DistilRoBERTa + LoRA         | 0.646     | 0.642     | ⚡⚡ | 🧠🧠 | Efficient Fine-tuning |
 
 ---
 
